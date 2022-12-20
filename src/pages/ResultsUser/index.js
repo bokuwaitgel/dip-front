@@ -1,11 +1,33 @@
 import React, { useState, useEffect } from "react";
 
-import { Container, Title, Description, Card, Question } from "./styles";
+import { Container, Title, Description,DescriptionOne, Card, Question } from "./styles";
 import axiosInstance from "../../services/api";
 
 import Header from "../../components/Header";
 
 import AnswerItem from "../../components/AnswerItem";
+
+import PropTypes from "prop-types";
+
+const YoutubeEmbed = ({ embedId }) => (
+  <div className="video-responsive">
+    <iframe
+      width="853"
+      height="480"
+      src={`https://www.youtube.com/embed/${embedId}`}
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+      title="Embedded youtube"
+    />
+  </div>
+);
+
+YoutubeEmbed.propTypes = {
+  embedId: PropTypes.string.isRequired
+};
+
+const list = ['9OpA013KxAs']
 
 export default function Survey({ history, match }) {
   const [data, setData] = useState();
@@ -46,11 +68,20 @@ export default function Survey({ history, match }) {
       <Header />
       {data && (
         <>
-          <Title>{data.title}</Title>
+          <Title><Title>{data.title.split('.').length > 1  ? data.title.split('.')[1] : data.title}</Title></Title>
           <Description>{`Your score: ${data.Res}`}</Description>
-          {
-
-          }
+          {data.title.split('.')[0] === 'Стресс тест' && 
+          (
+            data.Res > 6 ? <Description>Та стрессгүй байна</Description> :
+            <>
+              <Description>Та стресстсэн байна</Description>
+              {
+              'Сэтгэл зүйн эрүүл мэндийн тест'=== data?.title?.split('.')?.[1] ? <YoutubeEmbed embedId="9OpA013KxAs" /> : 
+              'Бие хүний үнэлгээний тест'=== data?.title?.split('.')?.[1] ?<YoutubeEmbed embedId="9OpA013KxAs" /> :
+              'Оюун ухааны тест'=== data?.title?.split('.')?.[1] ?<YoutubeEmbed embedId="9OpA013KxAs" /> : null
+              }
+            </>
+          )}
           {mount(data)}
         </>
       )}

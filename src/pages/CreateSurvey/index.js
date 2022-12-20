@@ -43,6 +43,7 @@ const defaultValue = {
 export default function CreateSurvey({ history }) {
   const [questions, setQuestions] = useState([{ ...defaultValue }]);
   const [selectedQuestion, setSelectedQuestion] = useState(0);
+  const [type, setType] = useState('A');
 
   const [options, setOptions] = useState([]);
   const [scores, setScores] = useState([]);

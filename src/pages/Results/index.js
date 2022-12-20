@@ -44,7 +44,7 @@ export default function Survey({ history, match }) {
       <Header />
       {data && (
         <>
-          <Title>{data.title}</Title>
+          <Title><Title>{data.title.split('.').length > 1  ? data.title.split('.')[1] : data.title}</Title></Title>
           <Description>{data.description}</Description>
           {mount(data)}
         </>

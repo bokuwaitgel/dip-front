@@ -21,6 +21,10 @@ export const Description = styled.p`
   font-size: 24px;
   color: white;
 `;
+export const DescriptionOne = styled.p`
+  font-size: 20px;
+  color: white;
+`;
 
 export const Card = styled(TCard)`
   width: 90%;

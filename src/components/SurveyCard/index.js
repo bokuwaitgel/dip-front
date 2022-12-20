@@ -62,7 +62,7 @@ const SurveyCard = ({
           <Category>
             <i className="material-icons left">event_note</i>Survey
           </Category>
-          <Title>{title}</Title>
+          <Title>{title.split('.').length > 1  ? title.split('.')[1] : title}</Title>
         </TitleContainer>
       </Heading>
       <Body>

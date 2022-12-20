@@ -76,9 +76,10 @@ export default function Survey({ history, match }) {
             <>
               <Description>Та стресстсэн байна</Description>
               {
-              'Сэтгэл зүйн эрүүл мэндийн тест'=== data?.title?.split('.')?.[1] ? <YoutubeEmbed embedId="9OpA013KxAs" /> : 
-              'Бие хүний үнэлгээний тест'=== data?.title?.split('.')?.[1] ?<YoutubeEmbed embedId="9OpA013KxAs" /> :
-              'Оюун ухааны тест'=== data?.title?.split('.')?.[1] ?<YoutubeEmbed embedId="9OpA013KxAs" /> : null
+              'Сэтгэл зүйн эрүүл мэндийн тест'=== data?.title ? <YoutubeEmbed embedId="9OpA013KxAs" /> : 
+              'Бие хүний үнэлгээний тест'=== data?.title ?<YoutubeEmbed embedId="9OpA013KxAs" /> :
+              'Оюун ухааны тест'=== data?.title?<YoutubeEmbed embedId="9OpA013KxAs" /> : 
+              'Стресс тест.TEST'=== data?.title ?<YoutubeEmbed embedId="f9X1C7pTu-M" /> : null
               }
             </>
           )}

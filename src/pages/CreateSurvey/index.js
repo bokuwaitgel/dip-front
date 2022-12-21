@@ -60,10 +60,6 @@ export default function CreateSurvey({ history }) {
   }, [selectedQuestion]);
 
   const createNewQuestion = () => {
-    if (questions.length >= 10) {
-      toast.error("You can only have up to 10 questions");
-      return;
-    }
     setQuestions([...questions, { ...defaultValue }]);
   };
 
@@ -107,8 +103,8 @@ export default function CreateSurvey({ history }) {
   };
 
   const addNewOption = () => {
-    if (options.length >= 5) {
-      toast.error("You can only add a maximum of 5 options");
+    if (options.length >= 10) {
+      toast.error("You can only add a maximum of 10 options");
       return;
     }
     const newOptions = [...options, ""];

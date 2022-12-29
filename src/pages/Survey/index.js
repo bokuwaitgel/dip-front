@@ -153,7 +153,6 @@ export default function Survey({ history, match }) {
         </Card>
       </Route>
       {/* {console.log(questions)} */}
-      {/* {console.log(questions)} */}
       {questions?.map((question, i) => {
         return (
           <Route

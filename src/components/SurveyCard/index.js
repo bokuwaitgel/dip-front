@@ -109,12 +109,16 @@ const SurveyCard = ({
             <Button color={"red"} rounded onClick={handleChangeStatusToClosed}>
               {"Судалгааг хаах"}
             </Button>
+            <SizedBox height="15px" />
+            <Button color={"red"} rounded onClick={() => history.push(`${URL_EDIT}/edit/${surveyId}`)}>
+              {"Судалгааг өөрчлөх"}
+            </Button>
           </>
         )}
         {isAdmin && !isActive && (
           <>
           <SizedBox height="15px" />
-            <Button color={"red"} rounded onClick={handleChangeStatusToActive}>
+            <Button color={"green"} rounded onClick={handleChangeStatusToActive}>
               {"Судалгааг нээх"}
             </Button>
             <SizedBox height="15px" />

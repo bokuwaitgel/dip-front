@@ -23,6 +23,7 @@ export default function Survey({ history, match }) {
               answerId={option}
               text={option}
               showResults
+              showPresentage={true}
               resultPercent={total ? question.result[i] / total : 0}
             />
           ))}
@@ -38,14 +39,14 @@ export default function Survey({ history, match }) {
       })
       .catch();
   }, [match.params.id]);
-  console.log(data)
+  // console.log(data)
   return (
     <Container>
       <Header />
       {data && (
         <>
           <Title><Title>{data.title.split('.').length > 1  ? data.title.split('.')[1] : data.title}</Title></Title>
-          <Description>{data.description}</Description>
+          {/* <Description>{data.description}</Description> */}
           {mount(data)}
         </>
       )}

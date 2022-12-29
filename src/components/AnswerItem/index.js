@@ -15,6 +15,7 @@ export default function AnswerItem({
   selected = false,
   score=0,
   selections,
+  showPresentage = false,
   onSelect = () => {},
   id,
   showResults = false,
@@ -37,9 +38,12 @@ export default function AnswerItem({
         <AnswerText>{text}</AnswerText>
       </AnswerTextContainer>
       {showResults ? (
-        <ResultPercentage>{`${parseInt(
+        showPresentage ? 
+        (<ResultPercentage>{`${parseInt(
+          resultPercent * 100
+        )}%`}</ResultPercentage>): (<ResultPercentage>{`${parseInt(
           score
-        )}`}</ResultPercentage>
+        )}`}</ResultPercentage>)
       ) : (
         <I className="material-icons" selected={selected}>
           {selected ? "check_box" : "check_box_outline_blank"}

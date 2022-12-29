@@ -38,8 +38,8 @@ export default function AnswerItem({
       </AnswerTextContainer>
       {showResults ? (
         <ResultPercentage>{`${parseInt(
-          resultPercent * 100
-        )}%`}</ResultPercentage>
+          score
+        )}`}</ResultPercentage>
       ) : (
         <I className="material-icons" selected={selected}>
           {selected ? "check_box" : "check_box_outline_blank"}

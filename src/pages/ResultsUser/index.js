@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import { Container, Title, Description,DescriptionOne, Card, Question } from "./styles";
 import axiosInstance from "../../services/api";
+import ReactPlayer from 'react-player'
 
 import Header from "../../components/Header";
 
@@ -31,7 +32,6 @@ const list = ['9OpA013KxAs']
 
 export default function Survey({ history, match }) {
   const [data, setData] = useState();
-  console.log(match)
   const mount = data =>
     data?.questions?.map(question => {
       const total = question.result.reduce((acc, cur) => cur + acc, 0);
@@ -39,6 +39,7 @@ export default function Survey({ history, match }) {
       return (
         <Card key={question.id}>
           <Question>{"Question: " + question.title}</Question>
+          {console.log(question)}
           {question?.options?.map((option, i) => (
             <AnswerItem
               key={i}
@@ -47,6 +48,7 @@ export default function Survey({ history, match }) {
               text={option}
               showResults
               resultPercent={total ? question.result[i] / total : 0}
+              score={question?.createdAt[i]}
             />
           ))}
         </Card>
@@ -62,7 +64,7 @@ export default function Survey({ history, match }) {
       .catch();
   }, [match.params.id]);
   console.log(data)
-
+  const res = data?.options?.filter(d => parseInt(d.score) >= parseInt(data.Res) )
   return (
     <Container>
       <Header />
@@ -70,17 +72,12 @@ export default function Survey({ history, match }) {
         <>
           <Title><Title>{data.title.split('.').length > 1  ? data.title.split('.')[1] : data.title}</Title></Title>
           <Description>{`Your score: ${data.Res}`}</Description>
-          {data.title.split('.')[0] === 'Стресс тест' && 
-          (
-            data.Res > 6 ? <Description>Та стрессгүй байна</Description> :
+          <Description>{`${data.description}`}</Description>
+          {res && 
+            (
             <>
-              <Description>Та стресстсэн байна</Description>
-              {
-              'Сэтгэл зүйн эрүүл мэндийн тест'=== data?.title ? <YoutubeEmbed embedId="9OpA013KxAs" /> : 
-              'Бие хүний үнэлгээний тест'=== data?.title ?<YoutubeEmbed embedId="9OpA013KxAs" /> :
-              'Оюун ухааны тест'=== data?.title?<YoutubeEmbed embedId="9OpA013KxAs" /> : 
-              'Стресс тест.TEST'=== data?.title ?<YoutubeEmbed embedId="f9X1C7pTu-M" /> : null
-              }
+            {(<DescriptionOne>{res[0]?.description}</DescriptionOne>)}
+            <ReactPlayer url={res[0]?.link} />
             </>
           )}
           {mount(data)}

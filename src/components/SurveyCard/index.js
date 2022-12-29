@@ -22,7 +22,8 @@ import {
   URL_SURVEY,
   CLOSED,
   URL_SURVEYS,
-  URL_RESULTS
+  URL_RESULTS,
+  URL_EDIT
 } from "../../utils/constants";
 import { toast } from "react-toastify";
 
@@ -43,6 +44,11 @@ const SurveyCard = ({
       .put(`${URL_SURVEYS}/status/` + surveyId, { status })
       .then(refetchData);
   };
+  const deleteSurvey = id => {
+    return axiosInstace
+      .delete(`${URL_SURVEYS}/delete/` + surveyId)
+      .then(refetchData);
+  };
 
   const handleChangeStatusToActive = () => {
     changeSurveyStatus(ACTIVE)
@@ -53,6 +59,11 @@ const SurveyCard = ({
     changeSurveyStatus(CLOSED)
       .then(() => toast.success("Survey moved to closed."))
       .catch(() => toast.error("Error moving survey to closed."));
+  };
+  const handleDelete= () => {
+    deleteSurvey()
+      .then(() => toast.success("Survey deleted."))
+      .catch(() => toast.error("Error survey to delete."));
   };
 
   return (
@@ -97,6 +108,22 @@ const SurveyCard = ({
             <SizedBox height="15px" />
             <Button color={"red"} rounded onClick={handleChangeStatusToClosed}>
               {"Судалгааг хаах"}
+            </Button>
+          </>
+        )}
+        {isAdmin && !isActive && (
+          <>
+          <SizedBox height="15px" />
+            <Button color={"red"} rounded onClick={handleChangeStatusToActive}>
+              {"Судалгааг нээх"}
+            </Button>
+            <SizedBox height="15px" />
+            <Button color={"red"} rounded onClick={handleDelete}>
+              {"Судалгааг устгах"}
+            </Button>
+            <SizedBox height="15px" />
+            <Button color={"red"} rounded onClick={() => history.push(`${URL_EDIT}/edit/${surveyId}`)}>
+              {"Судалгааг өөрчлөх"}
             </Button>
           </>
         )}

@@ -153,6 +153,7 @@ export default function Survey({ history, match }) {
         </Card>
       </Route>
       {/* {console.log(questions)} */}
+      {/* {console.log(questions)} */}
       {questions?.map((question, i) => {
         return (
           <Route
@@ -165,6 +166,9 @@ export default function Survey({ history, match }) {
                 {i > 0 ? "Previous Question" : "Go back"}
               </BackLink>
               <Question>{question.title}</Question>
+              {question?.link && (
+                <img className="center" src={question?.link} />
+              )}
               <SizedBox height="20px" />
               {question.options.map((text,idx)=> (  
                 <AnswerItem

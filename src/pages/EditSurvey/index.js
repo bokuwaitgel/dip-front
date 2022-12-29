@@ -23,7 +23,7 @@ import {
 } from "./styles";
 import SizedBox from "../../components/SizedBox";
 import Header from "../../components/Header";
-import { debounce, uniqBy } from "lodash";
+import { debounce, set, truncate, uniqBy } from "lodash";
 import api from "../../services/api";
 import { toast } from "react-toastify";
 import {
@@ -36,25 +36,50 @@ import {
 
 const defaultValue = {
   title: "",
-  link: "",
   options: [""],
-  scores: [""]
+  createdAt: [""]
 };
 
-export default function CreateSurvey({ history }) {
-  const [questions, setQuestions] = useState([{ ...defaultValue }]);
+export default function EditSurvey({ history, match }) {
+  // console.log(match?.params?.surveyId)
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState({});
+  const [questions, setQuestions] = useState([{...defaultValue}]);
   const [selectedQuestion, setSelectedQuestion] = useState(0);
+  const [options, setOptions] = useState([]);
+  const [createdAt, setCreatedAt] = useState([]);
+  const [questionTitle, setQuestionTitle] = useState("");
+  const [surveyTitle, setSurveyTitle] = useState("");
   const [description, setDescription] = useState([]);
   const [resScores, setResScores] = useState([]);
   const [links, setLinks] = useState([]);
   const [ResultTitle, setResultTitle] = useState("");
 
-  const [options, setOptions] = useState([]);
-  const [scores, setScores] = useState([]);
-  const [questionTitle, setQuestionTitle] = useState("");
-  const [questionLink, setQuestionLink] = useState("");
-  const [surveyTitle, setSurveyTitle] = useState("");
-
+  const fetchData = () => {
+    setIsLoading(true);
+    api
+      .get(`/surveys/${match.params.surveyId}`)
+      .then(response => {
+        setData(response.data);
+        setSurveyTitle(response.data?.title)
+        setQuestions([...questions, response.data?.questions])
+        const copyItems = [...questions];
+        const description= []
+        const resScores= []
+        const links= []
+        response.data?.questions?.map(d=>copyItems.push(d))
+        response.data?.options?.map(d => {description.push(d.description);resScores.push(d.score); links.push(d.link);})
+        setQuestions(copyItems)
+        setDescription(description)
+        setResScores(resScores)
+        setLinks(links)
+        setResultTitle(response.data?.description)
+        setIsLoading(false);
+      })
+      .catch(({ response }) => {
+        setIsLoading(false);
+      });
+  };
 
   const handleDescriptionChange = (e, index) => {
     const { value } = e.target;
@@ -103,15 +128,17 @@ export default function CreateSurvey({ history }) {
     setLinks(newLinks);
   };
 
+  useEffect(fetchData, []);
+  console.log(data)
+  console.log(questions)
+
   useEffect(() => {
     setOptions(questions[selectedQuestion]?.options || []);
-    setScores(questions[selectedQuestion]?.scores || []);
+    setCreatedAt(questions[selectedQuestion]?.createdAt || []);
   }, [selectedQuestion]);
-  // console.log(questions)
 
   useEffect(() => {
     setQuestionTitle(questions[selectedQuestion]?.title || "");
-    setQuestionLink(questions[selectedQuestion]?.link || "");
   }, [selectedQuestion]);
 
   const createNewQuestion = () => {
@@ -129,21 +156,14 @@ export default function CreateSurvey({ history }) {
   };
   const updateScores = (index, newScores) => {
     const newQuestions = [...questions];
-    newQuestions[index].scores = newScores || scores;
+    newQuestions[index].createdAt = newScores || createdAt;
     setQuestions(newQuestions);
   };
 
   const updateQuestionTitle = (index, newTitle) => {
-    // console.log('test1')
     const newQuestions = [...questions];
     newQuestions[index].title = newTitle || questionTitle;
-    setQuestions(newQuestions);
-  };
-  const updateQuestionLink = (index, newLink) => {
-    // console.log('test')
-    const newQuestions = [...questions];
-    newQuestions[index].link = newLink || questionLink;
-    setQuestions(newQuestions);
+    // setQuestions(newQuestions);
   };
 
   const handleOptionsChange = (e, index) => {
@@ -154,20 +174,15 @@ export default function CreateSurvey({ history }) {
   };
   const handleScoreChange = (e, index) => {
     const { value } = e.target;
-    const newScores = [...scores];
+    const newScores = [...createdAt];
     newScores[index] = value;
-    setScores(newScores);
+    setCreatedAt(newScores);
   };
 
   const handleQuestionTitleChange = e => {
     const { value } = e.target;
     setQuestionTitle(value);
   };
-  const handleQuestionLinkChange = e => {
-    const { value } = e.target;
-    setQuestionLink(value);
-  };
-
 
   const addNewOption = () => {
     if (options.length >= 10) {
@@ -175,9 +190,9 @@ export default function CreateSurvey({ history }) {
       return;
     }
     const newOptions = [...options, ""];
-    const newScores = [...scores, ""];
+    const newScores = [...createdAt, ""];
     setOptions(newOptions);
-    setScores(newScores)
+    setCreatedAt(newScores)
   };
   const deleteOption = index => {
     if (options.length === 1) {
@@ -185,11 +200,11 @@ export default function CreateSurvey({ history }) {
       return;
     }
     const newOptions = [...options];
-    const newScores = [...scores];
+    const newScores = [...createdAt];
     newOptions.splice(index, 1);
     newScores.splice(index, 1);
     setOptions(newOptions);
-    setScores(newScores);
+    setCreatedAt(newScores);
   };
   
 
@@ -206,11 +221,11 @@ export default function CreateSurvey({ history }) {
 
   useEffect(() => {
     const doDebounce = debounce(
-      () => updateOptions(selectedQuestion, options),updateScores(selectedQuestion,scores),
+      () => updateOptions(selectedQuestion, options),updateScores(selectedQuestion,createdAt),
       100
     );
     doDebounce();
-  }, [options, scores]);
+  }, [options, createdAt]);
 
   useEffect(() => {
     const doDebounce = debounce(
@@ -219,13 +234,6 @@ export default function CreateSurvey({ history }) {
     );
     doDebounce();
   }, [questionTitle]);
-  useEffect(() => {
-    const doDebounce = debounce(
-      () => updateQuestionLink(selectedQuestion, questionLink),
-      100
-    );
-    doDebounce();
-  }, [questionLink]);
 
   const saveSurvey = (status = IDLE) => {
     const requestBody = {
@@ -234,7 +242,7 @@ export default function CreateSurvey({ history }) {
       questions: questions.map(q => ({
         ...q,
         options: uniqBy(q.options, a => a),
-        createdAt: uniqBy(q.scores, a => a)
+        createdAt: uniqBy(q.createdAt, a => a)
       })),
       options: description.map((des, idx)=> ({
         description: des,
@@ -243,19 +251,6 @@ export default function CreateSurvey({ history }) {
       })),
       status
     };
-    // console.log(requestBody)
-    if (description.some(o => !o)) {
-      toast.error("Error: Some description(s) are empty!");
-      return;
-    }
-    if (resScores.some(o => !o)) {
-      toast.error("Error: Some scores(s) are empty!");
-      return;
-    }
-    if (links.some(o => !o)) {
-      toast.error("Error: Some links(s) are empty!");
-      return;
-    }
 
     if (questions.some(q => !q.title)) {
       toast.error("Error: Some question(s) are untitled");
@@ -268,14 +263,14 @@ export default function CreateSurvey({ history }) {
     }
 
     api
-      .post("/surveys", requestBody)
+      .put(`/surveys/update/${match?.params?.surveyId}`, requestBody)
       .then(() => {
-        toast.success("☑ Survey created successfuly!");
+        toast.success("☑ Survey edit successfuly!");
         history.push(URL_ROOT);
       })
       .catch(err => {
         toast.error(
-          "Error creating survey: " + err?.response?.data?.message ||
+          "Error editing survey: " + err?.response?.data?.message ||
             err?.response?.data
         );
       });
@@ -283,8 +278,11 @@ export default function CreateSurvey({ history }) {
 
   return (
     <Container>
+      {console.log(questions.length)}
+      {!isLoading && questions.length> 0 && (
+      <>
       <Header
-        createSurvey={false}
+        createSurvey={false} 
         leftButtons={[
           <Button
             key={`${CANCEL}-BUTTON`}
@@ -309,7 +307,6 @@ export default function CreateSurvey({ history }) {
           </Button>
         ]}
       />
-
       <SurveyName>
         <SurveyInput
           placeholder="Survey Title"
@@ -317,6 +314,7 @@ export default function CreateSurvey({ history }) {
           onChange={e => setSurveyTitle(e.target.value)}
         />
       </SurveyName>
+
       <Card>
             <QuestionTitleInputContainer>
               <QuestionTitleInput
@@ -360,7 +358,6 @@ export default function CreateSurvey({ history }) {
             </Button>
           </Card>
       <Body>
-        
         <SideBar>
           <Button color="green" rightIcon="add" onClick={createNewQuestion}>
             New Question
@@ -378,7 +375,6 @@ export default function CreateSurvey({ history }) {
           ))}
           <SizedBox height="10px;"></SizedBox>
         </SideBar>
-
         <QuestionCard>
           <Card>
             <QuestionTitleInputContainer>
@@ -398,12 +394,6 @@ export default function CreateSurvey({ history }) {
                 </Button>
               </QuestionAction>
             </QuestionTitleInputContainer>
-            <QuestionTitleInput
-                onChange={handleQuestionLinkChange}
-                value={questionLink}
-                placeholder="Question Link"
-                maxLength="250"
-              ></QuestionTitleInput>
             {options.map((op, index) => {
               return (
                 <OptionInputContainer key={index}>
@@ -416,7 +406,7 @@ export default function CreateSurvey({ history }) {
                   ></OptionInput>
                   <OptionInput
                     placeholder="Score"
-                    value={scores[index]}
+                    value={createdAt[index]}
                     onChange={e => handleScoreChange(e, index)}
                     maxLength="250"
                   ></OptionInput>
@@ -433,6 +423,7 @@ export default function CreateSurvey({ history }) {
           </Card>
         </QuestionCard>
       </Body>
+      </>)}
     </Container>
   );
 }

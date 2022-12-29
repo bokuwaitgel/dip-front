@@ -11,11 +11,13 @@ import Results from "./pages/Results";
 import ResultsUser from "./pages/ResultsUser";
 import Survey from "./pages/Survey";
 import CreateSurvey from "./pages/CreateSurvey";
+import CreateResult from "./pages/CreateResult";
 import AdminRoute from "./components/ProtectedRoutes/adminProtected";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "materialize-css";
-import { URL_ROOT, URL_CREATE, URL_REGISTER, URL_LOGIN, URL_SURVEY, URL_RESULTS,URL_RESULTS_USER } from "./utils/constants";
+import { URL_ROOT, URL_CREATE, URL_REGISTER, URL_LOGIN, URL_SURVEY, URL_RESULTS,URL_RESULTS_USER, URL_EDIT,URL_CREATE_RESULT } from "./utils/constants";
+import EditSurvey from './pages/EditSurvey/index';
 
 function App() {
   const [user, setUser] = useState({ isLoggedIn: false });
@@ -33,8 +35,10 @@ function App() {
         <Router basename={URL_ROOT}>
           <Switch>
             <AdminRoute path={URL_CREATE} component={CreateSurvey} />
+            <AdminRoute path={URL_CREATE_RESULT} component={CreateResult} />
             <Route exact path={`${URL_SURVEY}/:surveyId/complete`} component={Survey} />
             <Route exact path={`${URL_SURVEY}/:surveyId`} component={Survey} />
+            <Route exact path={`${URL_EDIT}/edit/:surveyId`} component={EditSurvey} />
             <Route
               exact
               path={`${URL_SURVEY}/:surveyId/questions/:questionId`}

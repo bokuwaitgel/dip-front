@@ -17,7 +17,7 @@ import axiosInstance from "../../services/api";
 import VectorContainer from "../../components/VectorContainer";
 import signin_vector from "../../assets/img/flame-sign-up.png";
 import user_profile from "../../assets/img/user.jpg";
-import { COORDINATOR, URL_ROOT, URL_LOGIN, URL_CREATE } from '../../utils/constants';
+import { COORDINATOR, URL_ROOT, URL_LOGIN, URL_CREATE, URL_CREATE_RESULT } from '../../utils/constants';
 
 function Header({
   history,
@@ -57,9 +57,11 @@ function Header({
         ) : (
           createSurvey &&
           isAdmin && (
+            <>
             <Button color="green" onClick={() => history.push(URL_CREATE)}>
               Create New Survey
             </Button>
+          </>
           )
         )}
         {leftButtons && leftButtons}

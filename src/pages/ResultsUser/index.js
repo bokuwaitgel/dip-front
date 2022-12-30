@@ -40,6 +40,9 @@ export default function Survey({ history, match }) {
         <Card key={question.id}>
           <Question>{"Question: " + question.title}</Question>
           {console.log(question)}
+          {question?.link && (
+                <img className="center" src={question?.link} />
+              )}
           {question?.options?.map((option, i) => (
             <AnswerItem
               key={i}

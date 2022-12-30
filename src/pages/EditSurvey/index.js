@@ -36,6 +36,7 @@ import {
 
 const defaultValue = {
   title: "",
+  link: "",
   options: [""],
   createdAt: [""]
 };
@@ -52,6 +53,7 @@ export default function EditSurvey({ history, match }) {
   const [surveyTitle, setSurveyTitle] = useState("");
   const [description, setDescription] = useState([]);
   const [resScores, setResScores] = useState([]);
+  const [questionLink, setQuestionLink] = useState("");
   const [links, setLinks] = useState([]);
   const [ResultTitle, setResultTitle] = useState("");
 
@@ -87,6 +89,20 @@ export default function EditSurvey({ history, match }) {
     newOptions[index] = value;
     setDescription(newOptions);
   };
+  const updateQuestionLink = (index, newLink) => {
+    // console.log('test')
+    const newQuestions = [...questions];
+    newQuestions[index].link = newLink || questionLink;
+    // setQuestions(newQuestions);
+  };
+
+  useEffect(() => {
+    const doDebounce = debounce(
+      () => updateQuestionLink(selectedQuestion, questionLink),
+      100
+    );
+    doDebounce();
+  }, [questionLink]);
   const handleResScoreChange = (e, index) => {
     const { value } = e.target;
     const newScores = [...resScores];
@@ -99,7 +115,10 @@ export default function EditSurvey({ history, match }) {
     newLinks[index] = value;
     setLinks(newLinks);
   };
-
+  const handleQuestionLinkChange = e => {
+    const { value } = e.target;
+    setQuestionLink(value);
+  };
   const handleResultTitleChange = e => {
     const { value } = e.target;
     setResultTitle(value);
@@ -139,6 +158,7 @@ export default function EditSurvey({ history, match }) {
 
   useEffect(() => {
     setQuestionTitle(questions[selectedQuestion]?.title || "");
+    setQuestionLink(questions[selectedQuestion]?.link || "");
   }, [selectedQuestion]);
 
   const createNewQuestion = () => {
@@ -394,6 +414,12 @@ export default function EditSurvey({ history, match }) {
                 </Button>
               </QuestionAction>
             </QuestionTitleInputContainer>
+            <QuestionTitleInput
+                onChange={handleQuestionLinkChange}
+                value={questionLink}
+                placeholder="Question Link"
+                maxLength="250"
+              ></QuestionTitleInput>
             {options.map((op, index) => {
               return (
                 <OptionInputContainer key={index}>

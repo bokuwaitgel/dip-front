@@ -1,19 +1,24 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Route } from "react-router-dom";
-import { Container, Card, Question, Buttons, Head } from "./styles";
-import AnswerItem from "../../components/AnswerItem";
-import Button from "../../components/Button";
-import themes from "../../themes";
-import SizedBox from "../../components/SizedBox";
-import BackLink from "../../components/BackLink";
-import Header from "../../components/Header";
-import VectorContainer from "../../components/VectorContainer";
-import done_vector from "../../assets/img/task-done.png";
-import bermuda_welcome from "../../assets/img/bermuda-welcome.png";
-import api from "../../services/api";
-import AuthContext from "../../contexts/auth";
-import { toast } from "react-toastify";
-import { URL_ROOT, URL_SURVEYS, URL_SURVEY ,URL_RESULTS_USER} from "../../utils/constants";
+import React, { useState, useEffect, useContext } from 'react';
+import { Route } from 'react-router-dom';
+import { Container, Card, Question, Buttons, Head } from './styles';
+import AnswerItem from '../../components/AnswerItem';
+import Button from '../../components/Button';
+import themes from '../../themes';
+import SizedBox from '../../components/SizedBox';
+import BackLink from '../../components/BackLink';
+import Header from '../../components/Header';
+import VectorContainer from '../../components/VectorContainer';
+import done_vector from '../../assets/img/task-done.png';
+import bermuda_welcome from '../../assets/img/bermuda-welcome.png';
+import api from '../../services/api';
+import AuthContext from '../../contexts/auth';
+import { toast } from 'react-toastify';
+import {
+  URL_ROOT,
+  URL_SURVEYS,
+  URL_SURVEY,
+  URL_RESULTS_USER,
+} from '../../utils/constants';
 
 export default function Survey({ history, match }) {
   const [selections, setSelections] = useState({});
@@ -27,7 +32,7 @@ export default function Survey({ history, match }) {
     setIsLoading(true);
     api
       .get(`/surveys/${match.params.surveyId}`)
-      .then(response => {
+      .then((response) => {
         setIsLoading(false);
         setData(response.data);
       })
@@ -44,7 +49,10 @@ export default function Survey({ history, match }) {
   const { questions, ...survey } = data;
 
   const goToNextPage = () => {
-    const nextPageId = getNextPage(getQuestionId(match.url), questions);
+    const nextPageId = getNextPage(
+      getQuestionId(match.url),
+      questions
+    );
     if (nextPageId) {
       history.push(
         `${getUrlWithoutLastPart(match.url)}/${getNextPage(
@@ -60,27 +68,28 @@ export default function Survey({ history, match }) {
   const submitSurvey = () => {
     const requestBody = {
       survey: survey.id,
-      answers: []
+      answers: [],
     };
-    
 
     requestBody.answers = Object.entries(selections).map(
       ([question, a]) => ({
         question,
         answer: a['answerId'],
-        score: a['score']
+        score: a['score'],
       })
     );
-  //  console.log(requestBody)
-   
+    //  console.log(requestBody)
+
     api
-      .post("/entries", requestBody)
+      .post('/entries', requestBody)
       .then(() => {
-        toast.success("☑ Survey submitted successfuly!");
+        toast.success('☑ Survey submitted successfuly!');
         history.push(URL_ROOT);
       })
-      .catch(err => {
-        toast.error("Error submiting survey: " + err?.response?.data?.message);
+      .catch((err) => {
+        toast.error(
+          'Error submiting survey: ' + err?.response?.data?.message
+        );
       });
   };
 
@@ -89,48 +98,72 @@ export default function Survey({ history, match }) {
       <Header />
       <Route exact path={`/survey/:surveyId`}>
         <Card>
-          <BackLink onClick={() => history.goBack()}>Back to surveys</BackLink>
+          <BackLink onClick={() => history.goBack()}>
+            Back to surveys
+          </BackLink>
           <Head>
             <Question>Take a quick survey</Question>
             <SizedBox height="20px"></SizedBox>
             <VectorContainer src={bermuda_welcome} />
             <SizedBox height="20px"></SizedBox>
             <div>
-              {questions?.length} QUESTION{questions?.length !== 1 ? "S" : ""}
+              {questions?.length} QUESTION
+              {questions?.length !== 1 ? 'S' : ''}
             </div>
             <div>
-              {" "}
+              {' '}
               {0.25 * questions?.length} MINUTE
-              {questions?.length !== 4 ? "S" : ""}
+              {questions?.length !== 4 ? 'S' : ''}
             </div>
           </Head>
           <p className="center">
-            {!isLoading && data.taken && "You already completed this survey"}
+            data.
+            {!isLoading &&
+              data.taken &&
+              'You already completed this survey'}
           </p>
           {!isLoading && (
             <Buttons>
               {data.taken ? (
                 <div>
-                <Button
-                  large
-                  block
-                  color="secondary"
-                  textColor={themes.colors.textNormal}
-                  leftIcon="chevron_left"
-                  onClick={() => history.goBack()}
-                >
-                  Go back
-                </Button>
-                <Button
-                  large
-                  block
-                  color="secondary"
-                  textColor={themes.colors.textNormal}
-                  leftIcon="chevron_right"
-                  onClick={() => history.push(`${URL_RESULTS_USER}/${userId}/${survey.id}`)}
-                >
-                  See result
-                </Button>
+                  <Button
+                    large
+                    block
+                    color="secondary"
+                    textColor={themes.colors.textNormal}
+                    leftIcon="chevron_left"
+                    onClick={() => history.goBack()}
+                  >
+                    Go back
+                  </Button>
+                  <Button
+                    large
+                    block
+                    color="secondary"
+                    textColor={themes.colors.textNormal}
+                    leftIcon="chevron_right"
+                    onClick={() =>
+                      history.push(
+                        `/survey/${match.params.surveyId}/questions/${questions[0].id}`
+                      )
+                    }
+                  >
+                    Try again
+                  </Button>
+                  <Button
+                    large
+                    block
+                    color="secondary"
+                    textColor={themes.colors.textNormal}
+                    leftIcon="chevron_right"
+                    onClick={() =>
+                      history.push(
+                        `${URL_RESULTS_USER}/${userId}/${survey.id}`
+                      )
+                    }
+                  >
+                    See result
+                  </Button>
                 </div>
               ) : (
                 <Button
@@ -158,18 +191,20 @@ export default function Survey({ history, match }) {
           <Route
             key={question.id}
             exact
-            path={`${getUrlWithoutLastPart(match.path)}/${question.id}`}
+            path={`${getUrlWithoutLastPart(match.path)}/${
+              question.id
+            }`}
           >
             <Card>
               <BackLink onClick={() => history.goBack()}>
-                {i > 0 ? "Previous Question" : "Go back"}
+                {i > 0 ? 'Previous Question' : 'Go back'}
               </BackLink>
               <Question>{question.title}</Question>
               {question?.link && (
                 <img className="center" src={question?.link} />
               )}
               <SizedBox height="20px" />
-              {question.options.map((text,idx)=> (  
+              {question.options.map((text, idx) => (
                 <AnswerItem
                   key={text}
                   questionId={question.id}
@@ -177,7 +212,9 @@ export default function Survey({ history, match }) {
                   score={question.createdAt[idx]}
                   // selected={true}
                   text={text}
-                  selected={selections[question.id]?.['answerId'] === text}
+                  selected={
+                    selections[question.id]?.['answerId'] === text
+                  }
                   selections={selections}
                   onSelect={setSelections}
                 ></AnswerItem>
@@ -202,7 +239,9 @@ export default function Survey({ history, match }) {
 
       <Route exact path={`/survey/:surveyId/complete`}>
         <Card center>
-          <BackLink onClick={() => history.goBack()}>Go back</BackLink>
+          <BackLink onClick={() => history.goBack()}>
+            Go back
+          </BackLink>
 
           <Head>
             <Question>Survey Completed</Question>
@@ -237,14 +276,11 @@ export default function Survey({ history, match }) {
 }
 
 function getUrlWithoutLastPart(url) {
-  return url
-    .split("/")
-    .slice(0, -1)
-    .join("/");
+  return url.split('/').slice(0, -1).join('/');
 }
 
 function getNextPage(id, arr) {
-  const currentPageNumber = arr.findIndex(el => el.id === id);
+  const currentPageNumber = arr.findIndex((el) => el.id === id);
 
   const nextPage = arr[currentPageNumber + 1];
   if (nextPage?.id) return nextPage.id;
@@ -252,8 +288,5 @@ function getNextPage(id, arr) {
 }
 
 function getQuestionId(url) {
-  return url
-    .split("/")
-    .slice(-1)
-    .join("");
+  return url.split('/').slice(-1).join('');
 }
